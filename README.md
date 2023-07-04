@@ -1,4 +1,4 @@
-# OpenWrt-X86-64 LEDE自用版云编译项目
+# OpenWrt-X86-64 LEDE 自用精简版云编译项目
 
 ## 固件来源：
 
