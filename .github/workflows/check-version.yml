@@ -18,11 +18,11 @@ jobs:
         run: |
           git clone https://github.com/coolsnowwolf/lede.git
           # 比较 kernel-6.1 文件
-          diff -q lede/include/kernel-6.1 kernel-6.1
+          diff -s lede/include/kernel-6.1 kernel-6.1
           echo "::set-output name=kernel_changed:: $?"
 
           # 比较 zzz-default-settings 文件
-          diff -q lede/package/lean/default-settings/files/zzz-default-settings zzz-default-settings
+          diff -s lede/package/lean/default-settings/files/zzz-default-settings zzz-default-settings
           echo "::set-output name=settings_changed:: $?"
 
       - name: Trigger Build Workflow
