@@ -15,28 +15,58 @@ jobs:
 
     steps:
     
-      - name: Get Commit Hash
-        id: getHash
+      - name: Get Version
+        id: get_version
         run: |
-          git clone --depth 1 $REPO_URL -b $REPO_BRANCH ${{ github.workspace }}/lede
+          git clone --depth 1 $REPO_URL -b $REPO_BRANCH lede
           
-      #- name: Checkout Repository
-        #uses: actions/checkout@v2
+          content=$(cat lede/include/kernel-6.1)
+          regex="LINUX_KERNEL_HASH-(.*) = (.*)"
+          if [[ $content =~ $regex ]]; then
+            version=${BASH_REMATCH[1]}
+            version=${version//[[:space:]]/}
+            echo "Version: $version"
+            echo "::set-output name=kernel_version:: $version"
+          fi
+          
+          content=$(cat lede/package/lean/default-settings/files/zzz-default-settings)
+          regex="DISTRIB_REVISION='(.*)'"
+          if [[ $content =~ $regex ]]; then
+            version=${BASH_REMATCH[1]}
+            version=${version//[[:space:]]/}
+            echo "Version: $version"
+            echo "::set-output name=setting_version:: $version"
+          fi
+          
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
       - name: Compare Files
         id: compare_files
         run: |
-          ls
-          # 比较 kernel-6.1 文件
-          diff -q ${{ github.workspace }}/lede/include/kernel-6.1 ${{ github.workspace }}/kernel-6.1
-          echo "::set-output name=kernel_changed:: $?"
-
-          # 比较 zzz-default-settings 文件
-          diff -q ${{ github.workspace }}/lede/package/lean/default-settings/files/zzz-default-settings ${{ github.workspace }}/zzz-default-settings
-          echo "::set-output name=settings_changed:: $?"
+          content=$(cat kernel-6.1)
+          regex="LINUX_KERNEL_HASH-(.*) = (.*)"
+          if [[ $content =~ $regex ]]; then
+            version=${BASH_REMATCH[1]}
+            version=${version//[[:space:]]/}
+            echo "Version: $version"
+            echo "::set-output name=current_kernel_version:: $version"
+          fi
+          
+          content=$(cat zzz-default-settings)
+          regex="DISTRIB_REVISION='(.*)'"
+          if [[ $content =~ $regex ]]; then
+            version=${BASH_REMATCH[1]}
+            version=${version//[[:space:]]/}
+            echo "Version: $version"
+            echo "::set-output name=current_setting_version:: $version"
+          fi
+          echo "----"
+          echo steps.get_version.outputs.kernel_version;
+          echo steps.get_version.outputs.setting_version;
 
       - name: Trigger Build Workflow
-        if: steps.compare_files.outputs.kernel_changed == '1' || steps.compare_files.outputs.settings_changed == '1'
+        if: steps.compare_files.outputs.current_kernel_version != steps.get_version.outputs.kernel_version || steps.compare_files.outputs.current_setting_version  != steps.get_version.outputs.setting_version
         run: |
           echo "文件不一致"
           rm -rf ${{ github.workspace }}/lede
