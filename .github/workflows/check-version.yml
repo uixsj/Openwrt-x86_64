@@ -30,9 +30,9 @@ jobs:
           fi
           
           content=$(cat lede/package/lean/default-settings/files/zzz-default-settings)
-          regex="DISTRIB_REVISION='(.*)'\""
+          regex="DISTRIB_REVISION='(.*)'"
           if [[ $content =~ $regex ]]; then
-            version=${BASH_REMATCH[1]}
+            version=${BASH_REMATCH[1]} | awk -F"'" '{print $1}'
             version=${version//[[:space:]]/}
             echo "Version: $version"
             echo "::set-output name=setting_version:: $version"
@@ -54,9 +54,9 @@ jobs:
           fi
           
           content=$(cat zzz-default-settings)
-          regex="DISTRIB_REVISION='(.*)'\""
+          regex="DISTRIB_REVISION='(.*)'"
           if [[ $content =~ $regex ]]; then
-            version=${BASH_REMATCH[1]}
+            version=${BASH_REMATCH[1]} | awk -F"'" '{print $1}'
             version=${version//[[:space:]]/}
             echo "Version: $version"
             echo "::set-output name=current_setting_version:: $version"
