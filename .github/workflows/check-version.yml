@@ -30,10 +30,9 @@ jobs:
           fi
           
           content=$(cat lede/package/lean/default-settings/files/zzz-default-settings)
-          regex="DISTRIB_REVISION='(.*)\'"
+          regex="DISTRIB_REVISION='([^']*)'"
           if [[ $content =~ $regex ]]; then
             version=${BASH_REMATCH[1]}
-            version=${version//[[:space:]]/}
             echo "Version: $version"
             echo "::set-output name=setting_version:: $version"
           fi
@@ -44,26 +43,20 @@ jobs:
       - name: Compare Files
         id: compare_files
         run: |
-          content=$(cat kernel-6.1)
-          regex="LINUX_KERNEL_HASH-(.*) = (.*)"
+          content=$(cat VERSION)
+          regex="kernel_version=([^[:space:]]+)"
           if [[ $content =~ $regex ]]; then
             version=${BASH_REMATCH[1]}
-            version=${version//[[:space:]]/}
             echo "Version: $version"
             echo "::set-output name=current_kernel_version:: $version"
           fi
           
-          content=$(cat zzz-default-settings)
-          regex="echo 'DISTRIB_REVISION='(.*)' >> /etc/openwrt_release'"
+          regex="setting_version=([^[:space:]]+)"
           if [[ $content =~ $regex ]]; then
             version=${BASH_REMATCH[1]}
-            version=${version//[[:space:]]/}
             echo "Version: $version"
             echo "::set-output name=current_setting_version:: $version"
           fi
-          echo "----"
-          echo steps.get_version.outputs.kernel_version;
-          echo steps.get_version.outputs.setting_version;
 
       - name: Trigger Build Workflow
         if: steps.compare_files.outputs.current_kernel_version != steps.get_version.outputs.kernel_version || steps.compare_files.outputs.current_setting_version  != steps.get_version.outputs.setting_version
