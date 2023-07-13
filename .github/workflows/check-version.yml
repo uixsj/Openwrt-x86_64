@@ -1,4 +1,4 @@
-name: Daily Check
+name: Daily Check Version
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -61,6 +61,8 @@ jobs:
       - name: Trigger Build Workflow
         if: steps.compare_files.outputs.current_kernel_version != steps.get_version.outputs.kernel_version || steps.compare_files.outputs.current_setting_version  != steps.get_version.outputs.setting_version
         run: |
+          echo $(steps.get_version.outputs.kernel_version)
+          echo $(steps.get_version.outputs.setting_version)
           echo "文件不一致"
           rm -rf ${{ github.workspace }}/lede
           # 触发另一个工作流程
