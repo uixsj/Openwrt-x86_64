@@ -19,10 +19,9 @@ jobs:
         id: getHash
         run: |
           git clone --depth 1 $REPO_URL -b $REPO_BRANCH ${{ github.workspace }}/lede
-          echo "::set-output name=commitHash::$(git rev-parse HEAD)"
           
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      #- name: Checkout Repository
+        #uses: actions/checkout@v2
 
       - name: Compare Files
         id: compare_files
