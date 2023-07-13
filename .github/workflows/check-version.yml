@@ -1,0 +1,35 @@
+name: Daily Check
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Compare Files
+        id: compare_files
+        run: |
+          git clone https://github.com/coolsnowwolf/lede.git
+          # 比较 kernel-6.1 文件
+          diff -q lede/include/kernel-6.1 kernel-6.1
+          echo "::set-output name=kernel_changed:: $?"
+
+          # 比较 zzz-default-settings 文件
+          diff -q lede/package/lean/default-settings/files/zzz-default-settings zzz-default-settings
+          echo "::set-output name=settings_changed:: $?"
+
+      - name: Trigger Build Workflow
+        if: steps.compare_files.outputs.kernel_changed == '1' || steps.compare_files.outputs.settings_changed == '1'
+        run: |
+          echo "文件不一致"
+          # 触发另一个工作流程
+          # 使用以下代码触发另一个工作流程的运行
+          # curl -X POST https://api.github.com/repos/uixsj/Openwrt-x86_64/actions/workflows/build-openwrt.yml/dispatches \
+          #   -H "Authorization: Bearer ${{ secrets.RELEASE_TOKEN }}" \
+          #   -H "Accept: application/vnd.github.v3+json"
