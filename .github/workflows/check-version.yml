@@ -48,8 +48,8 @@ jobs:
           echo "::set-output name=current_kernel_version:: $k_version"
           echo "::set-output name=current_setting_version:: $s_version"
           
-          echo k_version
-          echo s_version
+          echo $(k_version)
+          echo $(s_version)
 
       - name: Trigger Build Workflow
         if: steps.compare_files.outputs.current_kernel_version != steps.get_version.outputs.kernel_version || steps.compare_files.outputs.current_setting_version  != steps.get_version.outputs.setting_version
