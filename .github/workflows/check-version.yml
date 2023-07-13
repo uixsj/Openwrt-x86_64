@@ -30,7 +30,7 @@ jobs:
           fi
           
           content=$(cat lede/package/lean/default-settings/files/zzz-default-settings)
-          regex="echo 'DISTRIB_REVISION='(.*)' >> /etc/openwrt_release'"
+          regex="DISTRIB_REVISION='(.*)\'"
           if [[ $content =~ $regex ]]; then
             version=${BASH_REMATCH[1]}
             version=${version//[[:space:]]/}
