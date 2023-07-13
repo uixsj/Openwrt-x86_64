@@ -19,6 +19,7 @@ jobs:
           git clone https://github.com/coolsnowwolf/lede.git
           # 比较 kernel-6.1 文件
           diff -s lede/include/kernel-6.1 kernel-6.1
+          echo "diff info"
           echo "::set-output name=kernel_changed:: $?"
 
           # 比较 zzz-default-settings 文件
