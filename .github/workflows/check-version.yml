@@ -18,7 +18,7 @@ jobs:
       - name: Get Commit Hash
         id: getHash
         run: |
-          git clone --depth 1 $REPO_URL -b $REPO_BRANCH .
+          git clone --depth 1 $REPO_URL -b $REPO_BRANCH lede
           echo "::set-output name=commitHash::$(git rev-parse HEAD)"
           
       - name: Checkout Repository
@@ -39,6 +39,7 @@ jobs:
         if: steps.compare_files.outputs.kernel_changed == '1' || steps.compare_files.outputs.settings_changed == '1'
         run: |
           echo "文件不一致"
+          rm -rf lede
           # 触发另一个工作流程
           # 使用以下代码触发另一个工作流程的运行
           # curl -X POST https://api.github.com/repos/uixsj/Openwrt-x86_64/actions/workflows/build-openwrt.yml/dispatches \
