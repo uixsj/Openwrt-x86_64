@@ -54,15 +54,19 @@ jobs:
       - name: Trigger Build Workflow
         if: steps.compare_files.outputs.current_kernel_version != steps.get_version.outputs.kernel_version || steps.compare_files.outputs.current_setting_version  != steps.get_version.outputs.setting_version
         run: |
-          echo "文件不一致"
+          echo "new version."
           
           sed -i "s/kernel_version=.*/kernel_version=${{steps.get_version.outputs.kernel_version}}/" VERSION
           sed -i "s/setting_version=.*/setting_version=${{steps.get_version.outputs.setting_version}}/" VERSION
           rm -rf ${{ github.workspace }}/lede
           
-          
-          # 触发另一个工作流程
-          # 使用以下代码触发另一个工作流程的运行
-          # curl -X POST https://api.github.com/repos/uixsj/Openwrt-x86_64/actions/workflows/build-openwrt.yml/dispatches \
-          #   -H "Authorization: Bearer ${{ secrets.RELEASE_TOKEN }}" \
-          #   -H "Accept: application/vnd.github.v3+json"
+          git config --local user.email "fake@mail.com"
+          git config --local user.name "Jarvis"
+          git add VERSION
+          git commit -m "update VERSION file." -a
+          git push origin main
+          echo "update VERSION file done."
+
+          curl -X POST https://api.github.com/repos/uixsj/Openwrt-x86_64/actions/workflows/build-openwrt.yml/dispatches \
+             -H "Authorization: Bearer ${{ secrets.RELEASE_TOKEN }}" \
+             -H "Accept: application/vnd.github.v3+json"
