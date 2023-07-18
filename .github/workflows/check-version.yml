@@ -80,4 +80,5 @@ jobs:
               https://api.github.com/repos/uixsj/Openwrt-x86_64/actions/workflows/build-openwrt.yml/dispatches \
               -d '{"ref":"main"}'
           fi
+          echo "End."
 
