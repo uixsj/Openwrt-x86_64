@@ -62,7 +62,7 @@ jobs:
           git config --local user.email "fake@mail.com"
           git config --local user.name "Jarvis"
           git add VERSION
-          giterrorcheck=$(git commit -m "update VERSION file." -a 2>&1)
+          giterrorcheck=$(git commit 2>&1)
           
           if echo "$giterrorcheck" | grep -q "nothing to commit"; then
             echo "Git commit error message：$giterrorcheck"
